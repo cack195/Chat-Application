@@ -1,0 +1,68 @@
+.user-list-container {
+  overflow: auto;
+  overflow-x: hidden;
+  height: 80vh;
+}
+.chat-online {
+  color: #34ce57;
+}
+.chat-offline {
+  color: #e4606d;
+}
+.list-group-item {
+  padding: 0.4rem 1.25rem;
+  font-size: 10pt;
+}
+.list-group-item-action:focus,
+.list-group-item-action:hover,
+.active-chat {
+  background-color: #fff3cd;
+}
+
+
+.col-12.col-sm-4.col-md-4.col-lg-4.col-xl-2.border-right {
+  background-color: #f7dbdb; 
+  padding: 0;
+}
+
+.user-list-container {
+  padding-top: 1rem;
+}
+
+.list-group-item-action {
+  background-color: transparent;
+}
+
+.active-chat {
+  background-color: rgba(255, 192, 203, 0.5);
+}
+
+.col-12.col-sm-4.col-md-4.col-lg-4.col-xl-2.border-right {
+  background-color: #ffcccb;
+  padding: 0;
+}
+
+.user-list-container {
+  padding-top: 1rem;
+}
+
+.list-group-item-action {
+  background-color: transparent;
+}
+
+.active-chat {
+  background-color: rgba(255, 192, 203, 0.5);
+}
+
+.btn-outline-warning.btn-block.my-1.mt-4 {
+  color: white;
+  background-color: #ff69b4; 
+  border-color: #ff69b4; 
+  border-radius: 10px;
+  width:100%;
+}
+
+.btn-outline-warning.btn-block.my-1.mt-4:hover {
+  color: white;
+  background-color: #ff1493; 
+}
