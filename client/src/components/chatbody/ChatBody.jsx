@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import ApiConnector from "../../api/apiConnector";
 import ApiEndpoints from "../../api/apiEndpoints";
 import ServerUrl from "../../api/serverUrl";
@@ -17,9 +17,11 @@ const ChatBody = ({ match, currentChattingMember, setOnlineUserList }) => {
   const [inputMessage, setInputMessage] = useState("");
   const [messages, setMessages] = useState({});
   const [typing, setTyping] = useState(false);
-  const [status, setStatus] = useState("Online"); 
+  const [status, setStatus] = useState("Online");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-  const fetchChatMessage = async () => {
+  const fetchChatMessage = useCallback(async () => {
     const currentChatId = CommonUtil.getActiveChatId(match);
     if (currentChatId) {
       const url =
@@ -30,11 +32,12 @@ const ChatBody = ({ match, currentChattingMember, setOnlineUserList }) => {
       const chatMessages = await ApiConnector.sendGetRequest(url);
       setMessages(chatMessages);
     }
-  };
+  }, [match]);
 
   useEffect(() => {
+    CommonUtil.getActiveChatId(match);
     fetchChatMessage();
-  }, [CommonUtil.getActiveChatId(match)]);
+  }, [fetchChatMessage, match]);
 
   const loggedInUserId = CommonUtil.getUserId();
   const getChatMessageClassName = (userId) => {
@@ -42,6 +45,19 @@ const ChatBody = ({ match, currentChattingMember, setOnlineUserList }) => {
       ? "chat-message-right pb-3"
       : "chat-message-left pb-3";
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
@@ -111,16 +127,21 @@ const ChatBody = ({ match, currentChattingMember, setOnlineUserList }) => {
   const handleStatusChange = (selectedStatus) => {
     setStatus(selectedStatus);
     sendStatusUpdate(selectedStatus);
+    setDropdownOpen(false);
   };
 
   const sendStatusUpdate = (status) => {
-    socket.send(
-      JSON.stringify({
-        action: SocketActions.STATUS_CHANGE,
-        status: status,
-        user: CommonUtil.getUserId(),
-      })
-    );
+    if (socket.readyState === socket.OPEN) {
+      socket.send(
+        JSON.stringify({
+          action: SocketActions.STATUS_CHANGE,
+          status: status,
+          user: CommonUtil.getUserId(),
+        })
+      );
+    } else {
+      console.error("WebSocket is not open to send message.");
+    }
   };
 
   return (
@@ -139,52 +160,26 @@ const ChatBody = ({ match, currentChattingMember, setOnlineUserList }) => {
           <div className="flex-grow-1 pl-3">
             <strong>{currentChattingMember?.name}</strong>
           </div>
-          <div className="dropdown ml-auto">
+          <div className="dropdown-container ml-auto" ref={dropdownRef}>
             <button
-              className="btn btn-outline-secondary dropdown-toggle"
-              type="button"
-              id="statusDropdown"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
+              className="dropdown-button"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
             >
               {status}
             </button>
-            <div className="dropdown-menu" aria-labelledby="statusDropdown">
-              <button
-                className="btn btn-outline-secondary dropdown-toggle"
-                type="button"
-                id="statusDropdown"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-                onClick={() => handleStatusChange("Online")}
-              >
-                Online
-              </button>
-              <button
-                className="btn btn-outline-secondary dropdown-toggle"
-                type="button"
-                id="statusDropdown"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-                onClick={() => handleStatusChange("Offline")}
-              >
-                Offline
-              </button>
-              <button
-                className="btn btn-outline-secondary dropdown-toggle"
-                type="button"
-                id="statusDropdown"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-                onClick={() => handleStatusChange("DND")}
-              >
-                Do Not Disturb (DND)
-              </button>
-            </div>
+            {dropdownOpen && (
+              <div className="dropdown-content">
+                <button onClick={() => handleStatusChange("Online")}>
+                  Online
+                </button>
+                <button onClick={() => handleStatusChange("Offline")}>
+                  Offline
+                </button>
+                <button onClick={() => handleStatusChange("DND")}>
+                  Do Not Disturb (DND)
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -194,7 +189,7 @@ const ChatBody = ({ match, currentChattingMember, setOnlineUserList }) => {
           className="chat-messages pl-4 pt-4 pr-4 pb-1 d-flex flex-column-reverse"
         >
           {typing && (
-            <div className="chat-message-left chat-bubble mb-1">
+            <div className="chat-message-left chat-bubble typing mb-1">
               <div className="typing">
                 <div className="dot"></div>
                 <div className="dot"></div>
