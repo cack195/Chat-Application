@@ -1,15 +1,13 @@
-/* Bootstrap styles */
 @import url('https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css');
 
-/* Custom chat styles */
 #chat-message-input {
-  margin-right: -5px; /* Adjusting margin for alignment */
+  margin-right: -5px; 
 }
 
 .chat-messages {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 138px); /* Adjusted height calculation */
+  height: calc(100vh - 138px);
   overflow-y: scroll;
   scroll-behavior: smooth;
   transition: all 0.5s;
@@ -22,15 +20,14 @@
 }
 
 .chat-message-left {
-  margin-right: auto; /* Pushes left-aligned messages to the left */
+  margin-right: auto; 
 }
 
 .chat-message-right {
-  flex-direction: row-reverse; /* Reverses direction for right-aligned messages */
-  margin-left: auto; /* Pushes right-aligned messages to the right */
+  flex-direction: row-reverse;
+  margin-left: auto;
 }
 
-/* Typing indicator bubble */
 .chat-bubble.typing {
   background-color: #fff3cd;
   padding: 16px 28px;
@@ -82,4 +79,41 @@
     transform: translateY(0px);
     background-color: #dac587;
   }
+}
+
+/* Custom dropdown styles */
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-button {
+  background-color: #ffffff;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  color: #495057;
+  padding: 0.375rem 0.75rem;
+  cursor: pointer;
+}
+
+.dropdown-content {
+  display: block;
+  position: absolute;
+  background-color: #ffffff;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content button {
+  background-color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.dropdown-content button:hover {
+  background-color: #f1f1f1;
 }
