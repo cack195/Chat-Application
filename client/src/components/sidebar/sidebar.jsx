@@ -62,7 +62,6 @@ const Sidebar = (props) => {
     setIsShowAddPeopleModal(true);
   };
 
-
   const addMemberClickHandler = async (memberId) => {
     const userId = CommonUtil.getUserId();
     let requestBody = {
@@ -92,14 +91,23 @@ const Sidebar = (props) => {
 
   const getChatListWithOnlineUser = () => {
     let updatedChatList = chatUsers.map((user) => {
-      if (props.onlineUserList.includes(user.id)) {
-        user.isOnline = true;
-      } else {
-        user.isOnline = false;
-      }
+      user.status = props.onlineUserList.includes(user.id) ? 'Online' : 'Offline';
       return user;
     });
     return updatedChatList;
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case "Online":
+        return <span className="fas fa-circle chat-online"></span>;
+      case "Offline":
+        return <span className="fas fa-circle chat-offline"></span>;
+      case "DND":
+        return <span className="fas fa-circle chat-dnd"></span>;
+      default:
+        return <span className="fas fa-circle chat-offline"></span>;
+    }
   };
 
   return (
@@ -135,17 +143,7 @@ const Sidebar = (props) => {
                 <div className="flex-grow-1 ml-3">
                   {chatUser.name}
                   <div className="small">
-                    {chatUser.isOnline ? (
-                      <>
-                        <span className="fas fa-circle chat-online"></span>{" "}
-                        Online
-                      </>
-                    ) : (
-                      <>
-                        <span className="fas fa-circle chat-offline"></span>{" "}
-                        offline
-                      </>
-                    )}
+                    {getStatusIcon(chatUser.status)} {chatUser.status}
                   </div>
                 </div>
               </div>
